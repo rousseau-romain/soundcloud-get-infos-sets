@@ -5,7 +5,10 @@
   "description": "Adds custom button to SoundCloud playlist pages",
   "browser_specific_settings": {
     "gecko": {
-      "id": "soundcloud-playlist-exporter@romain.com"
+      "id": "soundcloud-playlist-exporter@romain.com",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "icons": {
