@@ -1,0 +1,22 @@
+{
+  "name": "soundcloud-console-logger",
+  "version": "1.0.0",
+  "description": "Browser extension that adds console logs to SoundCloud website",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.254",
+    "typescript": "^5.3.3"
+  },
+  "keywords": [
+    "browser-extension",
+    "soundcloud",
+    "chrome",
+    "firefox"
+  ],
+  "author": "",
+  "license": "MIT"
+}

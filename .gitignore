@@ -5,10 +5,13 @@ web-ext-artifacts/
 *.pem
 *.crx
 
+# TypeScript/Node
+node_modules/
+dist/
+
 # OS
 .DS_Store
 Thumbs.db
 
 # Local settings
 .claude/settings.local.json
-.mcp.json

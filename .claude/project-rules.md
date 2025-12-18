@@ -10,10 +10,13 @@ This is a browser extension (Chrome/Firefox compatible) that adds console loggin
 - Keep the manifest simple and only add permissions when absolutely necessary
 
 ### File Organization
+- `src/` - TypeScript source files (edit these)
+  - `content.ts` - Content script source
+  - Future: `background.ts`, popup scripts, etc.
+- `dist/` - Compiled JavaScript (auto-generated, never edit directly)
 - `manifest.json` - Extension configuration (single source of truth)
-- `content.js` - Content scripts that run on SoundCloud pages
-- `background.js` - Background service worker (if needed in future)
-- `popup/` - Popup UI files (if needed in future)
+- `package.json` - Dependencies and build scripts
+- `tsconfig.json` - TypeScript compiler configuration
 
 ### Content Script Guidelines
 - Content scripts should be lightweight and non-intrusive
@@ -28,10 +31,14 @@ This is a browser extension (Chrome/Firefox compatible) that adds console loggin
 - Document any browser-specific behavior
 
 ### Code Style
+- Write all code in TypeScript (`.ts` files in `src/`)
+- Use explicit type annotations for function parameters and return types
+- Define interfaces for complex data structures
+- Use `const` and `let` (never `var`)
 - Use clear, descriptive variable and function names
 - Add comments for complex logic
 - Keep functions small and focused
-- Use modern JavaScript (ES6+)
+- Target ES2020+ for modern browser features
 
 ### Security
 - Never inject untrusted content into the page
@@ -49,12 +56,24 @@ This is a browser extension (Chrome/Firefox compatible) that adds console loggin
 - Commit logical, atomic changes
 - Write clear commit messages
 - Keep the .gitignore updated for build artifacts
+- Only commit source files (`src/`), not compiled output (`dist/`)
+
+### TypeScript Build Process
+- Run `npm install` after cloning the repository
+- Build TypeScript: `npm run build` (compiles `src/*.ts` → `dist/*.js`)
+- Development mode: `npm run watch` (auto-rebuild on file changes)
+- Always build before testing the extension
+- Never edit files in `dist/` directly - they are auto-generated
+- TypeScript errors must be fixed before the code will compile
 
 ### Testing
+- Build the project first: `npm run build`
 - Manually test on both Chrome and Firefox after changes
+- Reload the extension after building (don't forget this step!)
 - Test on different SoundCloud pages (home, track, playlist, profile)
 - Check browser console for errors
 - Verify extension loads correctly after browser restart
+- Check for TypeScript compilation errors in the terminal
 
 ### MCP Servers
 - The project uses MCP (Model Context Protocol) servers for enhanced development capabilities

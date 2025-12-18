@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SoundCloud Console Logger",
-  "version": "1.0.0",
-  "description": "Adds console logs to SoundCloud website",
+  "name": "SoundCloud Playlist Button",
+  "version": "1.1.0",
+  "description": "Adds custom button to SoundCloud playlist pages",
   "icons": {
     "48": "icon.png",
     "96": "icon.png"
@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "matches": ["*://*.soundcloud.com/*"],
-      "js": ["content.js"],
+      "js": ["dist/content.js"],
       "run_at": "document_start"
     }
   ],

@@ -1,0 +1,42 @@
+<svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="48" cy="48" r="46" fill="#FF5500" stroke="#FF3300" stroke-width="2"/>
+
+  <!-- Playlist lines (representing tracks) -->
+  <g fill="white" opacity="0.9">
+    <!-- Top track -->
+    <rect x="22" y="20" width="32" height="4" rx="2"/>
+    <circle cx="58" cy="22" r="3" fill="white"/>
+
+    <!-- Second track -->
+    <rect x="22" y="32" width="28" height="4" rx="2"/>
+    <circle cx="54" cy="34" r="3" fill="white"/>
+
+    <!-- Third track -->
+    <rect x="22" y="44" width="35" height="4" rx="2"/>
+    <circle cx="61" cy="46" r="3" fill="white"/>
+
+    <!-- Fourth track -->
+    <rect x="22" y="56" width="30" height="4" rx="2"/>
+    <circle cx="56" cy="58" r="3" fill="white"/>
+
+    <!-- Fifth track -->
+    <rect x="22" y="68" width="26" height="4" rx="2"/>
+    <circle cx="52" cy="70" r="3" fill="white"/>
+  </g>
+
+  <!-- Export/Download arrow -->
+  <g fill="white">
+    <path d="M 68 50 L 68 72 L 78 72 L 78 50 Z" fill="white" opacity="0.95"/>
+    <path d="M 73 72 L 83 62 L 73 52 L 63 62 Z" fill="white" opacity="0.95"/>
+  </g>
+
+  <!-- Small SoundCloud wave accent (bottom left) -->
+  <g opacity="0.3" fill="white">
+    <rect x="12" y="82" width="2" height="6" rx="1"/>
+    <rect x="16" y="80" width="2" height="8" rx="1"/>
+    <rect x="20" y="78" width="2" height="10" rx="1"/>
+    <rect x="24" y="81" width="2" height="7" rx="1"/>
+    <rect x="28" y="83" width="2" height="5" rx="1"/>
+  </g>
+</svg>
