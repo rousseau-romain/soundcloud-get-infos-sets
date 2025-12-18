@@ -9,6 +9,7 @@ Before publishing, ensure:
 - [ ] Extension works correctly on both Chrome and Firefox
 - [ ] All features have been tested thoroughly
 - [ ] No console errors on target websites
+- [ ] **Validation passed**: Run `npm run lint` with 0 errors
 - [ ] README.md is complete and accurate
 - [ ] Icon files are present and properly referenced
 - [ ] Version number is set in `manifest.json`
@@ -26,31 +27,34 @@ Before publishing, ensure:
 
 ### Step 2: Prepare Your Package
 
-1. **Build the extension:**
+1. **Validate the extension:**
    ```bash
-   npm run build
+   npm run lint
+   ```
+   This runs Mozilla's addons-linter to catch errors before submission. You should see:
+   ```
+   Validation Summary:
+   errors          0
+   notices         0
+   warnings        0
    ```
 
-2. **Create a ZIP file** containing these files:
+2. **Create a ZIP file:**
+   ```bash
+   npm run package
    ```
-   soundcloud-ext.zip
+   This automatically builds TypeScript and creates `soundcloud-ext-v1.1.0.zip` containing:
+   ```
+   soundcloud-ext-v1.1.0.zip
    ├── manifest.json
+   ├── icon-48.png
+   ├── icon.png
    ├── icon.svg
-   ├── dist/
-   │   └── content.js
-   └── (no node_modules, no src/)
+   └── dist/
+       └── content.js
    ```
 
-   **Command to create ZIP:**
-   ```bash
-   # Make sure you've built first
-   npm run build
-
-   # Create ZIP with only necessary files
-   zip -r soundcloud-ext.zip manifest.json icon.svg dist/ -x "*.DS_Store"
-   ```
-
-3. **Important:** Do NOT include:
+3. **Important - Excluded from ZIP:**
    - `node_modules/`
    - `src/` (TypeScript source)
    - `.git/`

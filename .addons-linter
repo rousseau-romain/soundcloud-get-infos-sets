@@ -1,0 +1,6 @@
+{
+  "output": "text",
+  "self-hosted": true,
+  "scan-file": ["manifest.json", "dist/**/*.js", "icon.svg"],
+  "ignore": ["node_modules/**", ".git/**", "screenshots/**", ".claude/**", "src/**", "*.zip"]
+}

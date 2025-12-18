@@ -33,6 +33,12 @@ npm run build
 npm run watch
 ```
 
+4. Validate your extension (recommended before publishing):
+```bash
+npm run lint        # Packages and runs Mozilla's addons-linter
+npm run validate    # Builds and lints in one command
+```
+
 ## Installation
 
 ### Chrome

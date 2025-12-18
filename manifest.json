@@ -12,7 +12,7 @@
     }
   },
   "icons": {
-    "48": "icon.png",
+    "48": "icon-48.png",
     "96": "icon.png"
   },
   "content_scripts": [
