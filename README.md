@@ -105,9 +105,15 @@ soundcloud-ext/
 │   └── content.ts        # TypeScript source code
 ├── dist/
 │   └── content.js        # Compiled JavaScript (generated)
+├── screenshots/          # Store listing screenshots
+│   ├── image-store.png   # Main screenshot
+│   └── README.md         # Screenshot guidelines
 ├── manifest.json         # Extension configuration
 ├── package.json          # Node.js dependencies
 ├── tsconfig.json         # TypeScript configuration
+├── icon.svg              # Extension icon (SVG)
+├── icon.png              # Extension icon (PNG for Chrome)
+├── PUBLISHING.md         # Publishing guide
 └── README.md             # This file
 ```
 
@@ -118,15 +124,19 @@ soundcloud-ext/
 - `manifest.json` - Extension configuration and permissions
 - `tsconfig.json` - TypeScript compiler settings
 - `package.json` - Project dependencies and build scripts
-- `icon.svg` - Extension icon (scalable vector graphic)
+- `icon.svg` / `icon.png` - Extension icons
 - `icon-preview.html` - Interactive icon preview and customization guide
+- `screenshots/` - Screenshots for store listings (NOT included in ZIP package)
+- `PUBLISHING.md` - Complete guide for publishing to Chrome/Firefox stores
 
-## Icon
+## Publishing
 
-The extension includes a custom-designed icon featuring:
-- SoundCloud's brand orange color (#FF5500)
-- Playlist representation with track lines
-- Export/download arrow
-- Sound wave accent
+To package the extension for publishing:
 
-To preview the icon, open `icon-preview.html` in your browser. The icon is in SVG format for perfect scaling, but can be converted to PNG if needed (see the preview file for instructions).
+```bash
+npm run package  # Creates soundcloud-ext-v1.1.0.zip
+```
+
+The ZIP contains only runtime files (manifest, icon, dist/). Screenshots are uploaded separately through the store web interface.
+
+See **[PUBLISHING.md](PUBLISHING.md)** for the complete step-by-step guide.

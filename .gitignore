@@ -9,6 +9,9 @@ web-ext-artifacts/
 node_modules/
 dist/
 
+# Release packages
+*.zip
+
 # OS
 .DS_Store
 Thumbs.db

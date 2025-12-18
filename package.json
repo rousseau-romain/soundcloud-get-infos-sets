@@ -1,11 +1,12 @@
 {
-  "name": "soundcloud-console-logger",
-  "version": "1.0.0",
-  "description": "Browser extension that adds console logs to SoundCloud website",
+  "name": "soundcloud-playlist-exporter",
+  "version": "1.1.0",
+  "description": "Browser extension to extract and export track information from SoundCloud playlists",
   "scripts": {
     "build": "tsc",
     "watch": "tsc --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "package": "npm run build && zip -r soundcloud-ext-v$(node -p \"require('./package.json').version\").zip manifest.json icon.svg dist/ -x '*.DS_Store'"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.254",
