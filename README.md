@@ -146,3 +146,7 @@ npm run package  # Creates soundcloud-ext-v1.1.0.zip
 The ZIP contains only runtime files (manifest, icon, dist/). Screenshots are uploaded separately through the store web interface.
 
 See **[PUBLISHING.md](PUBLISHING.md)** for the complete step-by-step guide.
+
+## License
+
+This project is licensed under the MIT License.
