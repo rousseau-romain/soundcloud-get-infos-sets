@@ -8,4 +8,6 @@ web-ext-artifacts/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local settings
 .claude/settings.local.json
