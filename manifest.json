@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "SoundCloud Console Logger",
+  "version": "1.0.0",
+  "description": "Adds console logs to SoundCloud website",
+  "icons": {
+    "48": "icon.png",
+    "96": "icon.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.soundcloud.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": []
+}

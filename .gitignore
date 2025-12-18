@@ -1,0 +1,11 @@
+# Firefox specific
+web-ext-artifacts/
+
+# Chrome specific
+*.pem
+*.crx
+
+# OS
+.DS_Store
+Thumbs.db
+.claude/settings.local.json
