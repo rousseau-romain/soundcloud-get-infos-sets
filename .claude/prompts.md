@@ -17,6 +17,12 @@ A cross-browser extension (Chrome/Firefox) that adds console logging functionali
 - `manifest.json` - Extension configuration and permissions
 - `content.js` - Script that runs on SoundCloud pages
 - `README.md` - User-facing documentation
+- `.mcp.json` - MCP server configuration (filesystem access)
+
+## MCP Server
+- **filesystem**: Provides file search and directory browsing capabilities
+- Use `@filesystem` to reference project files in conversations
+- Configuration in `.mcp.json` (shared with team via git)
 
 ## Development Workflow
 1. Make code changes

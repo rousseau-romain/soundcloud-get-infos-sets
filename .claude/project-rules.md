@@ -56,6 +56,14 @@ This is a browser extension (Chrome/Firefox compatible) that adds console loggin
 - Check browser console for errors
 - Verify extension loads correctly after browser restart
 
+### MCP Servers
+- The project uses MCP (Model Context Protocol) servers for enhanced development capabilities
+- **filesystem** server provides file search and directory browsing
+- Configuration is stored in `.mcp.json` and shared via git
+- Use `@filesystem` to reference project files in conversations with Claude
+- Check server status with `claude mcp list` or `/mcp` in Claude Code
+- Only add MCP servers that benefit the entire team (project scope)
+
 ## Future Enhancements Guidelines
 If adding new features:
 - Update manifest.json version number
