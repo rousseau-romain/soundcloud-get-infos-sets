@@ -43,9 +43,9 @@ Before publishing, ensure:
    ```bash
    npm run package
    ```
-   This automatically builds TypeScript and creates `soundcloud-ext-v1.1.0.zip` containing:
+   This automatically builds TypeScript and creates `soundcloud-ext-vX.X.X.zip` containing:
    ```
-   soundcloud-ext-v1.1.0.zip
+   soundcloud-ext-vX.X.X.zip
    ├── manifest.json
    ├── icon-48.png
    ├── icon.png
@@ -229,14 +229,14 @@ When you make changes:
 1. **Update version in `manifest.json`:**
    ```json
    {
-     "version": "1.2.0"  // Follow semantic versioning
+     "version": "X.X.X"  // Follow semantic versioning
    }
    ```
 
 2. **Build and package:**
    ```bash
    npm run build
-   zip -r soundcloud-ext-v1.2.0.zip manifest.json icon.svg dist/
+   zip -r soundcloud-ext-vX.X.X.zip manifest.json icon.svg dist/
    ```
 
 3. **Upload new version:**
