@@ -140,7 +140,7 @@ soundcloud-ext/
 To package the extension for publishing:
 
 ```bash
-npm run package  # Creates soundcloud-ext-v1.1.0.zip
+npm run package  # Creates soundcloud-ext-vX.X.X.zip
 ```
 
 The ZIP contains only runtime files (manifest, icon, dist/). Screenshots are uploaded separately through the store web interface.
