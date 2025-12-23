@@ -3,16 +3,17 @@
   "version": "1.1.0",
   "description": "Browser extension to extract and export track information from SoundCloud playlists",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "node build.js",
+    "watch": "node build.js --watch",
     "clean": "rm -rf dist",
     "lint": "npm run package && addons-linter soundcloud-ext-v$(node -p \"require('./package.json').version\").zip --self-hosted",
     "validate": "npm run build && npm run lint",
-    "package": "npm run build && zip -r soundcloud-ext-v$(node -p \"require('./package.json').version\").zip manifest.json icon-48.png icon.png icon.svg dist/ -x '*.DS_Store'"
+    "package": "npm run build && zip -r soundcloud-ext-v$(node -p \"require('./package.json').version\").zip manifest.json options.html icon-48.png icon.png icon.svg dist/ -x '*.DS_Store'"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.254",
     "addons-linter": "^9.3.0",
+    "esbuild": "^0.27.2",
     "typescript": "^5.3.3"
   },
   "keywords": [

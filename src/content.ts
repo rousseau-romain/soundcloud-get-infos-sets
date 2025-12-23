@@ -1,202 +1,15 @@
-// SoundCloud Playlist Button Extension
-
-const BUTTON_ID = 'soundcloud-get-info-sets-button';
-const BUTTON_LABEL = 'Sets info';
-
 /**
- * Interface for track data extracted from playlist
+ * SoundCloud Playlist Button Extension - Main Content Script
+ *
+ * This script injects a custom button into SoundCloud playlist pages that allows:
+ * - Click: Export track data as JSON
+ * - Long-press: Export as batch download script (configurable)
+ * - Shift+Click: Open settings page
  */
-interface Track {
-  username: string;
-  trackTitle: string;
-  url: string;
-}
 
-/**
- * Check if the current page is a SoundCloud playlist/set page
- */
-function isPlaylistPage(): boolean {
-  return window.location.pathname.includes('/sets/');
-}
-
-/**
- * Helper function to create SVG elements with attributes
- */
-function createSVGElement<K extends keyof SVGElementTagNameMap>(
-  tag: K,
-  attrs: Record<string, string> = {}
-): SVGElementTagNameMap[K] {
-  const element = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  Object.entries(attrs).forEach(([key, value]) => {
-    element.setAttribute(key, value);
-  });
-  return element;
-}
-
-/**
- * Create the SVG icon element
- */
-function createIconSVG(): SVGSVGElement {
-  const svg = createSVGElement('svg', {
-    width: '16',
-    height: '16',
-    viewBox: '0 0 96 96'
-  });
-  svg.style.display = 'inline-block';
-  svg.style.verticalAlign = 'middle';
-  svg.style.marginRight = '6px';
-
-  // Background circle
-  const circle = createSVGElement('circle', {
-    cx: '48',
-    cy: '48',
-    r: '46',
-    fill: '#FF5500',
-    stroke: '#FF3300',
-    'stroke-width': '2'
-  });
-  svg.appendChild(circle);
-
-  // Playlist tracks group
-  const tracksGroup = createSVGElement('g', {
-    fill: 'white',
-    opacity: '0.9'
-  });
-
-  // Add 5 track lines with play buttons
-  const tracks = [
-    { x: 22, y: 20, width: 32, cx: 58, cy: 22 },
-    { x: 22, y: 32, width: 28, cx: 54, cy: 34 },
-    { x: 22, y: 44, width: 35, cx: 61, cy: 46 },
-    { x: 22, y: 56, width: 30, cx: 56, cy: 58 },
-    { x: 22, y: 68, width: 26, cx: 52, cy: 70 }
-  ];
-
-  tracks.forEach(track => {
-    const rect = createSVGElement('rect', {
-      x: track.x.toString(),
-      y: track.y.toString(),
-      width: track.width.toString(),
-      height: '4',
-      rx: '2'
-    });
-    tracksGroup.appendChild(rect);
-
-    const playCircle = createSVGElement('circle', {
-      cx: track.cx.toString(),
-      cy: track.cy.toString(),
-      r: '3'
-    });
-    tracksGroup.appendChild(playCircle);
-  });
-
-  svg.appendChild(tracksGroup);
-
-  // Export arrow
-  const arrowGroup = createSVGElement('g', {
-    fill: 'white'
-  });
-
-  const arrowRect = createSVGElement('path', {
-    d: 'M 68 50 L 68 72 L 78 72 L 78 50 Z',
-    opacity: '0.95'
-  });
-  arrowGroup.appendChild(arrowRect);
-
-  const arrowHead = createSVGElement('path', {
-    d: 'M 73 72 L 83 62 L 73 52 L 63 62 Z',
-    opacity: '0.95'
-  });
-  arrowGroup.appendChild(arrowHead);
-
-  svg.appendChild(arrowGroup);
-
-  return svg;
-}
-
-/**
- * Create a custom button matching SoundCloud's design
- */
-function createCustomButton(id: string, title: string): HTMLButtonElement {
-  const button = document.createElement('button');
-  button.id = id;
-  button.className = 'sc-button-primary sc-button sc-button-medium sc-button-responsive';
-  button.type = 'button';
-  button.title = title;
-  button.setAttribute('aria-label', title);
-
-  // Add icon (created with DOM methods for security)
-  const icon = createIconSVG();
-  button.appendChild(icon);
-
-  // Add text label (using textContent for security)
-  const label = document.createElement('span');
-  label.style.verticalAlign = 'middle';
-  label.textContent = title;
-  button.appendChild(label);
-
-  // Add click handler
-  button.addEventListener('click', handleButtonClick);
-
-  return button;
-}
-
-/**
- * Extract all tracks from the current playlist page
- */
-function getTracks(): Track[] {
-  return Array.from(document.querySelectorAll('li.trackList__item')).map((item) => {
-    const usernameElement = item.querySelector('.trackItem__username') as HTMLElement;
-    const trackTitleElement = item.querySelector('.trackItem__trackTitle') as HTMLAnchorElement;
-
-    const username = usernameElement?.innerText.trim() || '';
-    const trackTitle = trackTitleElement?.innerText.trim() || '';
-    const url = trackTitleElement?.href.replace(/\?.*$/, '') || '';
-
-    return { username, trackTitle, url };
-  });
-}
-
-/**
- * Handle button click event
- */
-function handleButtonClick(event: MouseEvent): void {
-  event.preventDefault();
-
-  // Extract playlist name from URL
-  const pathParts = window.location.pathname.split('/');
-  const setName = pathParts[pathParts.length - 1];
-
-  // Extract all tracks from the playlist
-  const tracks = getTracks();
-
-  // Check if user might need to load more tracks
-  // SoundCloud loads tracks in batches (typically 30 at a time)
-  if (tracks.length > 0 && tracks.length % 30 === 0) {
-    const shouldContinue = confirm(
-      `⚠️ Warning: Found exactly ${tracks.length} tracks.\n\n` +
-      `SoundCloud loads tracks in batches of 30. You might not have loaded all tracks yet!\n\n` +
-      `To load more:\n` +
-      `1. Scroll down to the bottom of the playlist\n` +
-      `2. Wait for more tracks to load\n` +
-      `3. Click this button again\n\n` +
-      `Do you want to export the current ${tracks.length} tracks anyway?`
-    );
-
-    if (!shouldContinue) {
-      return;
-    }
-  }
-
-  // Copy track data to clipboard as JSON
-  const tracksJson = JSON.stringify(tracks, null, 2);
-  navigator.clipboard.writeText(tracksJson).then(() => {
-    alert(`✅ Copied ${tracks.length} tracks from playlist "${setName}" to clipboard!`);
-  }).catch((err) => {
-    console.error('[SoundCloud Extension] Failed to copy to clipboard:', err);
-    alert(`Found ${tracks.length} tracks. Check console for details.`);
-  });
-}
+import { BUTTON_ID, BUTTON_LABEL, BUTTON_CONTAINER_SELECTORS } from './shared/constants';
+import { isPlaylistPage } from './utils/playlist';
+import { createCustomButton } from './ui/button';
 
 /**
  * Inject the custom button into the playlist header
@@ -208,17 +21,9 @@ function injectButton(): void {
   }
 
   // Find the button container in the playlist header
-  // SoundCloud uses different selectors, we'll try multiple approaches
-  const selectors = [
-    '.soundActions.sc-button-toolbar',
-    '.soundActions',
-    '.listenEngagement__footer .soundActions',
-    'div[class*="soundActions"]'
-  ];
-
   let container: HTMLElement | null = null;
 
-  for (const selector of selectors) {
+  for (const selector of BUTTON_CONTAINER_SELECTORS) {
     container = document.querySelector<HTMLElement>(selector);
     if (container) {
       break;
@@ -246,7 +51,7 @@ function initializeExtension(): void {
   // Try to inject button immediately
   injectButton();
 
-  // Also try after a short delay (for dynamic content)
+  // Also try after short delays (for dynamic content)
   setTimeout(injectButton, 1000);
   setTimeout(injectButton, 2000);
 }
@@ -269,9 +74,9 @@ function watchForNavigation(): void {
     childList: true,
     subtree: true
   });
-
 }
 
+// Initialize extension
 initializeExtension();
 
 // Watch for navigation changes (SoundCloud is a SPA)
