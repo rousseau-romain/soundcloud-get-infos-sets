@@ -1,13 +1,15 @@
 {
   "manifest_version": 3,
   "name": "SoundCloud Playlist Button",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Adds custom button to SoundCloud playlist pages",
   "browser_specific_settings": {
     "gecko": {
       "id": "soundcloud-playlist-exporter@romain.com",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
     }
   },
@@ -21,8 +23,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.soundcloud.com/*"],
-      "js": ["dist/content.js"],
+      "matches": [
+        "*://*.soundcloud.com/*"
+      ],
+      "js": [
+        "dist/content.js"
+      ],
       "run_at": "document_start"
     }
   ],
