@@ -1,20 +1,34 @@
 # SoundCloud Playlist Button
 
-A browser extension that adds a custom action button to SoundCloud playlist pages. Built with TypeScript for type safety and modern development practices.
+A browser extension that adds a custom action button to SoundCloud playlist pages. Extract track information as JSON or generate batch download scripts with customizable settings.
 
 ## Features
 
-- **Playlist Detection**: Automatically detects SoundCloud playlist/set pages (URLs matching `/sets/`)
-- **Track Extraction**: Extracts all tracks from the playlist including:
-  - Track title
-  - Artist/Username
-  - Track URL (cleaned, without query parameters)
-- **Smart Loading Detection**: Warns users when track count is a multiple of 30 (SoundCloud's lazy-load batch size)
-- **Clipboard Export**: Copies track data to clipboard as formatted JSON
-- **Console Table Display**: Shows extracted tracks in a formatted table for easy review
-- **Seamless Integration**: Button matches SoundCloud's native design system
-- **SPA Support**: Handles Single Page Application navigation automatically
-- **TypeScript**: Full type safety and modern development practices
+### 🎯 Core Functionality
+- **Three Interaction Modes**:
+  - **Click**: Export full track data as JSON
+  - **Long-press** (600ms): Generate batch download script
+  - **Shift+Click**: Open settings page
+
+### ⚙️ Configurable Settings
+- **Custom command**: Choose your download tool (`dl-soundcloud`, `yt-dlp`, `wget`, etc.)
+- **Commands per line**: Group 1-100 commands per line
+- **Separator**: Use `&&` (stop on error), `;` (continue), `||` (on failure), or `&` (parallel)
+- **Settings UI**: Beautiful options page integrated with browser
+
+### 🛡️ Smart Features
+- **Batch loading detection**: Warns when tracks might not be fully loaded (15 or 30 track increments)
+- **Track extraction**: Captures username, track title, and clean URLs
+- **SPA navigation**: Works with SoundCloud's single-page app
+- **Visual feedback**: Button pulse on long-press
+- **Seamless integration**: Matches SoundCloud's native design
+
+### 🏗️ Developer Features
+- **TypeScript**: Full type safety with modular architecture
+- **Modular codebase**: Organized into shared, utils, and UI modules
+- **Fast builds**: esbuild bundler (~4ms builds)
+- **Watch mode**: Auto-rebuild on file changes
+- **Automated versioning**: One-command version bumps with git tags
 
 ## Development Setup
 
@@ -60,80 +74,154 @@ For permanent installation in Firefox, you need to sign the extension through Mo
 
 ## Usage
 
-1. Navigate to a SoundCloud playlist page (e.g., `https://soundcloud.com/rowm1/sets/playlist-name`)
-2. **Important**: Scroll down to load all tracks! SoundCloud loads tracks in batches of 30
-3. Look for the **"Sets info"** button with the playlist icon 🎵 in the playlist header action bar (next to Share, Copy Link, etc.)
-4. Click the button to extract all tracks from the playlist
-5. If you have exactly 30, 60, 90, etc. tracks, you'll get a warning to scroll and load more
-6. Track data is automatically copied to your clipboard as JSON
-7. Open browser console (F12) to see detailed track information displayed in a table format
+### First Time Setup
 
-### ⚠️ Important Note
+1. **Configure Settings** (optional):
+   - Click the extension icon → **"Options"** or **"Preferences"**
+   - Or on any playlist page: **Shift+Click** the "Sets info" button
+   - Set your preferred:
+     - Command name (e.g., `dl-soundcloud`, `yt-dlp`)
+     - Commands per line (default: 5)
+     - Separator (default: `&&`)
 
-SoundCloud loads tracks lazily (30 at a time). **Before clicking the button**:
-- Scroll to the bottom of the playlist
-- Wait for all tracks to load
-- The extension will warn you if it detects you might have incomplete data
+### Using the Extension
 
-### Example Output
+1. Navigate to a SoundCloud playlist page (e.g., `https://soundcloud.com/username/sets/playlist-name`)
+2. **Important**: Scroll down to load all tracks! SoundCloud loads tracks in batches of 15-30
+3. Look for the **"Sets info"** button 🎵 in the playlist header (next to Share, Copy Link, etc.)
 
-The button extracts data in this format:
+### Three Interaction Modes
+
+#### 1️⃣ **Click** - Export as JSON
+Quick click copies full track data to clipboard:
 
 ```json
 [
   {
-    "username": "Blossom, D38",
-    "trackTitle": "Blossom & D38 - Moshpit",
+    "username": "Artist Name",
+    "trackTitle": "Track Title",
     "url": "https://soundcloud.com/artist/track"
-  },
-  {
-    "username": "Hadex, Arrdee, Digital Farm Animals",
-    "trackTitle": "Same Cycle",
-    "url": "https://soundcloud.com/artist/track-2"
   }
 ]
 ```
 
-### Customizing the Button
+**Use for:** Data analysis, importing to spreadsheets, custom scripts
 
-The `getTracks()` function extracts track data using these CSS selectors:
-- `li.trackList__item` - Individual track items
-- `.trackItem__username` - Artist/username
-- `.trackItem__trackTitle` - Track title and URL
+#### 2️⃣ **Long-press** (600ms) - Generate Download Script
+Hold the button for ~1 second to copy a ready-to-run batch script:
 
-To customize the behavior, edit `src/content.ts` and modify the `handleButtonClick` or `getTracks` functions, then rebuild with `npm run build`.
+```bash
+dl-soundcloud https://soundcloud.com/track1 && dl-soundcloud https://soundcloud.com/track2 && dl-soundcloud https://soundcloud.com/track3 && dl-soundcloud https://soundcloud.com/track4 && dl-soundcloud https://soundcloud.com/track5 &&
+dl-soundcloud https://soundcloud.com/track6 && ...
+```
+
+**Use for:** Bulk downloading tracks with command-line tools
+
+#### 3️⃣ **Shift+Click** - Open Settings
+Hold Shift and click to configure the extension.
+
+### ⚠️ Important: Loading All Tracks
+
+SoundCloud loads tracks lazily (15 or 30 at a time). **Before using the button**:
+- Scroll to the bottom of the playlist
+- Wait for all tracks to load
+- The extension warns you if track count is exactly 15, 30, 45, 60, etc.
 
 ## Project Structure
 
 ```
 soundcloud-ext/
-├── src/
-│   └── content.ts        # TypeScript source code
-├── dist/
-│   └── content.js        # Compiled JavaScript (generated)
-├── screenshots/          # Store listing screenshots
-│   ├── image-store.png   # Main screenshot
-│   └── README.md         # Screenshot guidelines
-├── manifest.json         # Extension configuration
-├── package.json          # Node.js dependencies
-├── tsconfig.json         # TypeScript configuration
-├── icon.svg              # Extension icon (SVG)
-├── icon.png              # Extension icon (PNG for Chrome)
-├── PUBLISHING.md         # Publishing guide
-└── README.md             # This file
+├── src/                      # TypeScript source files
+│   ├── content.ts           # Main content script
+│   ├── options.ts           # Options page script
+│   ├── shared/              # Shared modules
+│   │   ├── types.ts         # Type definitions
+│   │   ├── constants.ts     # Configuration constants
+│   │   └── settings.ts      # Settings management
+│   ├── utils/               # Utility functions
+│   │   ├── playlist.ts      # Track extraction
+│   │   └── clipboard.ts     # Copy operations
+│   └── ui/                  # UI components
+│       ├── button.ts        # Button creation
+│       └── icon.ts          # SVG icon generation
+├── dist/                    # Compiled output (generated)
+│   ├── content.js           # Bundled content script
+│   └── options.js           # Bundled options script
+├── build.js                 # esbuild bundler configuration
+├── update-version.js        # Version management script
+├── options.html             # Settings page UI
+├── manifest.json            # Extension configuration
+├── package.json             # Dependencies and scripts
+├── tsconfig.json            # TypeScript configuration
+├── icon.svg / icon.png      # Extension icons
+├── README.md                # This file
+├── VERSIONING.md            # Version management guide
+└── PUBLISHING.md            # Store publishing guide
 ```
 
 ### Key Files
 
-- `src/content.ts` - TypeScript source for content script
-- `dist/content.js` - Compiled JavaScript (auto-generated, do not edit)
-- `manifest.json` - Extension configuration and permissions
-- `tsconfig.json` - TypeScript compiler settings
-- `package.json` - Project dependencies and build scripts
-- `icon.svg` / `icon.png` - Extension icons
-- `icon-preview.html` - Interactive icon preview and customization guide
-- `screenshots/` - Screenshots for store listings (NOT included in ZIP package)
-- `PUBLISHING.md` - Complete guide for publishing to Chrome/Firefox stores
+| File | Purpose |
+|------|---------|
+| `src/content.ts` | Main content script (button injection, navigation) |
+| `src/options.ts` | Settings page logic |
+| `src/shared/` | Shared code used by multiple modules |
+| `src/utils/` | Utility functions (playlist, clipboard) |
+| `src/ui/` | UI components (button, icon) |
+| `dist/` | Compiled output (auto-generated by esbuild) |
+| `build.js` | Build system (bundles modules into single files) |
+| `update-version.js` | Automated version management with git tags |
+| `options.html` | Settings page UI |
+| `manifest.json` | Extension configuration for browsers |
+| `VERSIONING.md` | **Complete guide for version management** |
+| `PUBLISHING.md` | Guide for publishing to stores |
+
+## Version Management
+
+This project uses automated version management with git integration.
+
+### Quick Version Commands
+
+```bash
+# Patch release (bug fixes) - 1.2.1 → 1.2.2
+npm run version:patch
+
+# Minor release (new features) - 1.2.1 → 1.3.0
+npm run version:minor
+
+# Major release (breaking changes) - 1.2.1 → 2.0.0
+npm run version:major
+```
+
+### What Happens
+
+Each version command automatically:
+- ✅ Updates `package.json` and `manifest.json`
+- ✅ Creates a git commit: `"Bump version to X.Y.Z"`
+- ✅ Creates an annotated git tag: `vX.Y.Z`
+- ✅ Shows next steps for pushing and publishing
+
+### Complete Workflow
+
+```bash
+# 1. Update version
+npm run version:patch
+
+# 2. Push to remote
+git push origin main --tags
+
+# 3. Build and package
+npm run package
+
+# 4. Upload soundcloud-ext-vX.Y.Z.zip to store
+```
+
+**📖 See [VERSIONING.md](VERSIONING.md) for the complete guide**, including:
+- Semantic versioning explained
+- Advanced options (`--no-commit`, `--no-tag`)
+- Troubleshooting
+- Git tag management
+- Pre-release versions
 
 ## Publishing
 
@@ -143,9 +231,47 @@ To package the extension for publishing:
 npm run package  # Creates soundcloud-ext-vX.X.X.zip
 ```
 
-The ZIP contains only runtime files (manifest, icon, dist/). Screenshots are uploaded separately through the store web interface.
+The ZIP contains only runtime files (manifest, options.html, icons, dist/). Screenshots are uploaded separately through the store web interface.
 
-See **[PUBLISHING.md](PUBLISHING.md)** for the complete step-by-step guide.
+**📖 See [PUBLISHING.md](PUBLISHING.md)** for the complete step-by-step guide to publishing on Chrome Web Store and Firefox Add-ons.
+
+## Development Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run build` | Build extension once (production) |
+| `npm run watch` | Watch for changes and rebuild automatically |
+| `npm run clean` | Remove dist/ folder |
+| `npm run version:patch` | Bump patch version (1.2.1 → 1.2.2) |
+| `npm run version:minor` | Bump minor version (1.2.1 → 1.3.0) |
+| `npm run version:major` | Bump major version (1.2.1 → 2.0.0) |
+| `npm run package` | Build and create distribution ZIP |
+| `npm run validate` | Build and run linter |
+
+## Architecture
+
+This extension uses a **modular TypeScript architecture** with clear separation of concerns:
+
+- **`shared/`** - Types, constants, and settings shared across all modules
+- **`utils/`** - Pure utility functions (playlist extraction, clipboard operations)
+- **`ui/`** - UI components (button, icon generation)
+- **Main scripts** - Orchestration layers that compose the modules
+
+Benefits:
+- ✅ **No code duplication** - Shared code in one place
+- ✅ **Type-safe** - TypeScript across all modules
+- ✅ **Testable** - Small, focused modules
+- ✅ **Maintainable** - 50-100 lines per file
+- ✅ **Fast builds** - esbuild bundles in ~4ms
+
+## Contributing
+
+Contributions are welcome! When submitting changes:
+
+1. Use the automated version management: `npm run version:patch`
+2. Follow the existing code structure (modular architecture)
+3. Test in both Chrome and Firefox
+4. Update documentation if needed
 
 ## License
 
