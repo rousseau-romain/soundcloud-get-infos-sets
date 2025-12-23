@@ -9,6 +9,7 @@ This directory contains screenshots for publishing to Chrome Web Store and Firef
 ## Requirements
 
 ### Chrome Web Store
+
 - **Format:** PNG or JPEG
 - **Recommended sizes:**
   - 1280x800 pixels (16:10 ratio)
@@ -17,6 +18,7 @@ This directory contains screenshots for publishing to Chrome Web Store and Firef
 - **File size:** Up to 2 MB per image
 
 ### Firefox Add-ons (AMO)
+
 - **Format:** PNG or JPEG
 - **Recommended size:** 1280x800 pixels
 - **No strict size limits** but larger is better for clarity
@@ -45,6 +47,7 @@ Good screenshots should demonstrate:
 Screenshots are **NOT** included in the extension ZIP package.
 
 Upload them separately through:
+
 - **Chrome Web Store:** Dashboard → Your extension → Store listing → Screenshots section
 - **Firefox Add-ons:** Dashboard → Your add-on → Edit Product Page → Media section
 
@@ -54,7 +57,7 @@ To create additional screenshots:
 
 1. Load the extension in your browser
 2. Navigate to a SoundCloud playlist
-3. Take a full-window screenshot (Cmd+Shift+4 on Mac, Win+Shift+S on Windows)
+3. Take a full-window screenshot (Cmd+Shift+4 on macOS)
 4. Crop to 1280x800
 5. Save to this directory
 6. Update this file with the description

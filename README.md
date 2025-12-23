@@ -5,18 +5,21 @@ A browser extension that adds a custom action button to SoundCloud playlist page
 ## Features
 
 ### 🎯 Core Functionality
+
 - **Three Interaction Modes**:
   - **Click**: Export full track data as JSON
   - **Long-press** (600ms): Generate batch download script
   - **Shift+Click**: Open settings page
 
 ### ⚙️ Configurable Settings
+
 - **Custom command**: Choose your download tool (`dl-soundcloud`, `yt-dlp`, `wget`, etc.)
 - **Commands per line**: Group 1-100 commands per line
 - **Separator**: Use `&&` (stop on error), `;` (continue), `||` (on failure), or `&` (parallel)
 - **Settings UI**: Beautiful options page integrated with browser
 
 ### 🛡️ Smart Features
+
 - **Batch loading detection**: Warns when tracks might not be fully loaded (15 or 30 track increments)
 - **Track extraction**: Captures username, track title, and clean URLs
 - **SPA navigation**: Works with SoundCloud's single-page app
@@ -24,6 +27,7 @@ A browser extension that adds a custom action button to SoundCloud playlist page
 - **Seamless integration**: Matches SoundCloud's native design
 
 ### 🏗️ Developer Features
+
 - **TypeScript**: Full type safety with modular architecture
 - **Modular codebase**: Organized into shared, utils, and UI modules
 - **Fast builds**: esbuild bundler (~4ms builds)
@@ -32,26 +36,54 @@ A browser extension that adds a custom action button to SoundCloud playlist page
 
 ## Development Setup
 
-1. Install dependencies:
+### Quick Start
+
+For detailed compilation instructions (required for store submissions), see **[BUILD.md](BUILD.md)**.
+
+#### Automated Setup
+
+Run the automated setup script (recommended):
+
 ```bash
-npm install
+chmod +x setup.sh
+./setup.sh
 ```
 
-2. Build the TypeScript code:
-```bash
-npm run build
-```
+This will check requirements, install dependencies, build the extension, and create the distribution package.
 
-3. For development with auto-rebuild on changes:
-```bash
-npm run watch
-```
+#### Manual Setup
 
-4. Validate your extension (recommended before publishing):
-```bash
-npm run lint        # Packages and runs Mozilla's addons-linter
-npm run validate    # Builds and lints in one command
-```
+1. Install Node.js (if using nvm, the project includes a `.nvmrc` file):
+
+   ```bash
+   nvm install  # Installs Node.js 23.9.0
+   nvm use      # Switches to the correct version
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Build the TypeScript code:
+
+   ```bash
+   npm run build
+   ```
+
+4. For development with auto-rebuild on changes:
+
+   ```bash
+   npm run watch
+   ```
+
+5. Validate your extension (recommended before publishing):
+
+   ```bash
+   npm run lint        # Packages and runs Mozilla's addons-linter
+   npm run validate    # Builds and lints in one command
+   ```
 
 ## Installation
 
@@ -93,6 +125,7 @@ For permanent installation in Firefox, you need to sign the extension through Mo
 ### Three Interaction Modes
 
 #### 1️⃣ **Click** - Export as JSON
+
 Quick click copies full track data to clipboard:
 
 ```json
@@ -108,6 +141,7 @@ Quick click copies full track data to clipboard:
 **Use for:** Data analysis, importing to spreadsheets, custom scripts
 
 #### 2️⃣ **Long-press** (600ms) - Generate Download Script
+
 Hold the button for ~1 second to copy a ready-to-run batch script:
 
 ```bash
@@ -118,11 +152,13 @@ dl-soundcloud https://soundcloud.com/track6 && ...
 **Use for:** Bulk downloading tracks with command-line tools
 
 #### 3️⃣ **Shift+Click** - Open Settings
+
 Hold Shift and click to configure the extension.
 
 ### ⚠️ Important: Loading All Tracks
 
 SoundCloud loads tracks lazily (15 or 30 at a time). **Before using the button**:
+
 - Scroll to the bottom of the playlist
 - Wait for all tracks to load
 - The extension warns you if track count is exactly 15, 30, 45, 60, etc.
@@ -153,8 +189,11 @@ soundcloud-ext/
 ├── manifest.json            # Extension configuration
 ├── package.json             # Dependencies and scripts
 ├── tsconfig.json            # TypeScript configuration
+├── .nvmrc                   # Node.js version specification (v20 LTS)
 ├── icon.svg / icon.png      # Extension icons
 ├── README.md                # This file
+├── BUILD.md                 # **Complete compilation instructions for reviewers**
+├── setup.sh                 # Automated setup script
 ├── VERSIONING.md            # Version management guide
 └── PUBLISHING.md            # Store publishing guide
 ```
@@ -173,6 +212,9 @@ soundcloud-ext/
 | `update-version.js` | Automated version management with git tags |
 | `options.html` | Settings page UI |
 | `manifest.json` | Extension configuration for browsers |
+| `.nvmrc` | Node.js version specification (23.9.0) for nvm |
+| `BUILD.md` | **Complete compilation instructions for store reviewers** |
+| `setup.sh` | Automated setup script for building from source |
 | `VERSIONING.md` | **Complete guide for version management** |
 | `PUBLISHING.md` | Guide for publishing to stores |
 
@@ -196,6 +238,7 @@ npm run version:major
 ### What Happens
 
 Each version command automatically:
+
 - ✅ Updates `package.json` and `manifest.json`
 - ✅ Creates a git commit: `"Bump version to X.Y.Z"`
 - ✅ Creates an annotated git tag: `vX.Y.Z`
@@ -217,6 +260,7 @@ npm run package
 ```
 
 **📖 See [VERSIONING.md](VERSIONING.md) for the complete guide**, including:
+
 - Semantic versioning explained
 - Advanced options (`--no-commit`, `--no-tag`)
 - Troubleshooting
@@ -258,6 +302,7 @@ This extension uses a **modular TypeScript architecture** with clear separation 
 - **Main scripts** - Orchestration layers that compose the modules
 
 Benefits:
+
 - ✅ **No code duplication** - Shared code in one place
 - ✅ **Type-safe** - TypeScript across all modules
 - ✅ **Testable** - Small, focused modules
