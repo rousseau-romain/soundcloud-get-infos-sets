@@ -7,14 +7,13 @@ import { getTracks, getPlaylistName, checkBatchLoadingWarning } from './playlist
 import { loadSettings } from '../shared/settings';
 
 /**
- * Copy full track data as JSON to clipboard
+ * Copy track data as JSON to clipboard (generic version)
+ * @param tracks - Array of tracks to copy
+ * @param contextName - Name for user feedback (e.g., playlist name or track name)
  */
-export function copyTracksAsJSON(): void {
-  const playlistName = getPlaylistName();
-  const tracks = getTracks();
-
-  // Check if user might need to load more tracks
-  if (!checkBatchLoadingWarning(tracks.length, 'export')) {
+export function copyTracksAsJSON(tracks: Track[], contextName: string): void {
+  // Check if user might need to load more tracks (only for playlists)
+  if (tracks.length > 1 && !checkBatchLoadingWarning(tracks.length, 'export')) {
     return;
   }
 
@@ -22,18 +21,37 @@ export function copyTracksAsJSON(): void {
   const tracksJson = JSON.stringify(tracks, null, 2);
   navigator.clipboard.writeText(tracksJson)
     .then(() => {
-      alert(`✅ Copied ${tracks.length} tracks from playlist "${playlistName}" to clipboard!`);
+      const message = tracks.length === 1
+        ? `Copied track "${contextName}" to clipboard`
+        : `Copied ${tracks.length} tracks from playlist "${contextName}" to clipboard`;
+      console.log('[SoundCloud Extension]', message);
     })
     .catch((err) => {
       console.error('[SoundCloud Extension] Failed to copy to clipboard:', err);
-      alert(`Found ${tracks.length} tracks. Check console for details.`);
     });
 }
 
 /**
- * Copy URLs in specified format to clipboard
+ * Copy playlist tracks as JSON (backward compatible wrapper)
+ */
+export function copyPlaylistTracksAsJSON(): void {
+  const playlistName = getPlaylistName();
+  const tracks = getTracks();
+  copyTracksAsJSON(tracks, playlistName);
+}
+
+/**
+ * Copy URLs in specified format to clipboard (generic version)
+ * @param tracks - Array of tracks to copy
+ * @param contextName - Name for user feedback
+ * @param format - Output format
+ * @param commandsPerLine - Commands per line (optional)
+ * @param commandName - Command name (optional)
+ * @param separator - Separator (optional)
  */
 export function copyTracksAsScript(
+  tracks: Track[],
+  contextName: string,
   format: OutputFormat = 'script',
   commandsPerLine?: number,
   commandName?: string,
@@ -45,11 +63,8 @@ export function copyTracksAsScript(
   const finalCommandName = commandName ?? settings.commandName;
   const finalSeparator = separator ?? settings.separator;
 
-  const playlistName = getPlaylistName();
-  const tracks = getTracks();
-
-  // Check if user might need to load more tracks
-  if (!checkBatchLoadingWarning(tracks.length, 'export URLs for')) {
+  // Check if user might need to load more tracks (only for playlists)
+  if (tracks.length > 1 && !checkBatchLoadingWarning(tracks.length, 'export URLs for')) {
     return;
   }
 
@@ -59,28 +74,47 @@ export function copyTracksAsScript(
   if (format === 'script') {
     // Format as batch download script
     outputText = formatAsBatchScript(tracks, finalCommandName, finalCommandsPerLine, finalSeparator);
+    const trackDesc = tracks.length === 1
+      ? `track "${contextName}"`
+      : `${tracks.length} tracks from playlist "${contextName}"`;
     successMessage =
       `✅ Long press detected!\n\n` +
-      `Copied batch download script for ${tracks.length} tracks from playlist "${playlistName}"!\n\n` +
+      `Copied batch download script for ${trackDesc}!\n\n` +
       `Command: ${finalCommandName}\n` +
       `Format: ${finalCommandsPerLine} per line with '${finalSeparator}' separator`;
   } else {
     // Format as plain list of URLs
     outputText = tracks.map(track => track.url).join('\n');
+    const trackDesc = tracks.length === 1
+      ? `track "${contextName}"`
+      : `${tracks.length} track URLs from playlist "${contextName}"`;
     successMessage =
       `✅ Long press detected!\n\n` +
-      `Copied ${tracks.length} track URLs from playlist "${playlistName}"!\n\n` +
+      `Copied ${trackDesc}!\n\n` +
       `Format: One URL per line.`;
   }
 
   navigator.clipboard.writeText(outputText)
     .then(() => {
-      alert(successMessage);
+      console.log('[SoundCloud Extension]', successMessage);
     })
     .catch((err) => {
       console.error('[SoundCloud Extension] Failed to copy to clipboard:', err);
-      alert(`Found ${tracks.length} tracks. Check console for details.`);
     });
+}
+
+/**
+ * Copy playlist tracks as script (backward compatible wrapper)
+ */
+export function copyPlaylistTracksAsScript(
+  format: OutputFormat = 'script',
+  commandsPerLine?: number,
+  commandName?: string,
+  separator?: string
+): void {
+  const playlistName = getPlaylistName();
+  const tracks = getTracks();
+  copyTracksAsScript(tracks, playlistName, format, commandsPerLine, commandName, separator);
 }
 
 /**

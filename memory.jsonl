@@ -1,0 +1,7 @@
+{"type": "development_workflow", "content": "Developer uses `npm run watch` for automatic rebuilds during development. Do not suggest running `npm run build` manually."}
+{"type": "extension_features", "content": "SoundCloud extension supports both playlist pages (exports all tracks) and song pages (exports single track or adds to collection)."}
+{"type": "button_interactions", "content": "Song page button: Click=Copy JSON (single object, not array), Long-press=Copy script, Shift+Click=Add to collection. Playlist page button: Shift+Click=Open settings."}
+{"type": "storage", "content": "Extension uses chrome.storage.local (not localStorage) for cross-context data sharing between content scripts and extension pages."}
+{"type": "collection_feature", "content": "Track collection allows users to shift+click on song pages to add tracks to a persistent list, viewable and exportable from settings page."}
+{"type": "debugging", "content": "Console logs use prefix '[SoundCloud Extension]' for easy filtering. Song page detection and button injection has retry logic (0ms, 1000ms, 2000ms, 3000ms) for dynamic content."}
+{"type": "permissions", "content": "Manifest requires 'storage' and 'clipboardWrite' permissions for collection and clipboard functionality."}

@@ -43,3 +43,16 @@ export const TRACK_SELECTORS = {
   username: '.trackItem__username',
   title: '.trackItem__trackTitle'
 };
+
+/** Button identifier for song pages */
+export const SONG_BUTTON_ID = 'soundcloud-get-info-track-button';
+
+/** Button label text for song pages */
+export const SONG_BUTTON_LABEL = 'Track info';
+
+/** DOM selectors for finding the button container on song pages */
+export const SONG_BUTTON_CONTAINER_SELECTORS = [
+  '.soundActions.sc-button-toolbar',
+  '.soundActions',
+  'div[class*="soundActions"]'
+];

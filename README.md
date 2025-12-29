@@ -1,15 +1,31 @@
-# SoundCloud Playlist Button
+# SoundCloud Extension
 
-A browser extension that adds a custom action button to SoundCloud playlist pages. Extract track information as JSON or generate batch download scripts with customizable settings.
+A browser extension that adds custom action buttons to **both SoundCloud playlist and song pages**. Extract track information as JSON, generate batch download scripts, or build a collection of tracks across browsing sessions.
 
 ## Features
 
 ### 🎯 Core Functionality
 
+#### Playlist Pages
+
 - **Three Interaction Modes**:
-  - **Click**: Export full track data as JSON
+  - **Click**: Export all tracks as JSON array
   - **Long-press** (600ms): Generate batch download script
   - **Shift+Click**: Open settings page
+
+#### Song Pages (New!)
+
+- **Three Interaction Modes**:
+  - **Click**: Export single track as JSON object
+  - **Long-press** (600ms): Generate download command for track
+  - **Shift+Click**: Add track to collection
+
+#### Track Collection (New!)
+
+- Build a persistent collection across multiple song pages
+- View, manage, and export your collection from settings
+- Export collection as JSON or batch script
+- Duplicate detection (tracks identified by URL)
 
 ### ⚙️ Configurable Settings
 
@@ -20,11 +36,14 @@ A browser extension that adds a custom action button to SoundCloud playlist page
 
 ### 🛡️ Smart Features
 
+- **Page type detection**: Automatically detects playlist vs song pages
 - **Batch loading detection**: Warns when tracks might not be fully loaded (15 or 30 track increments)
-- **Track extraction**: Captures username, track title, and clean URLs
+- **Track extraction**: Captures username, track title, and clean URLs from meta tags
 - **SPA navigation**: Works with SoundCloud's single-page app
-- **Visual feedback**: Button pulse on long-press
+- **Visual feedback**: Button pulse on long-press, inline success/error messages
 - **Seamless integration**: Matches SoundCloud's native design
+- **Cross-context storage**: Uses chrome.storage.local for data persistence
+- **Retry logic**: Multiple attempts to inject buttons (handles dynamic content)
 
 ### 🏗️ Developer Features
 
@@ -116,17 +135,19 @@ For permanent installation in Firefox, you need to sign the extension through Mo
      - Commands per line (default: 5)
      - Separator (default: `&&`)
 
-### Using the Extension
+### Using on Playlist Pages
 
-1. Navigate to a SoundCloud playlist page (e.g., `https://soundcloud.com/username/sets/playlist-name`)
+1. Navigate to a SoundCloud playlist (e.g., `https://soundcloud.com/username/sets/playlist-name`)
 2. **Important**: Scroll down to load all tracks! SoundCloud loads tracks in batches of 15-30
-3. Look for the **"Sets info"** button 🎵 in the playlist header (next to Share, Copy Link, etc.)
+3. Look for the **"Sets info"** button in the playlist header (next to Share, Copy Link, etc.)
 
-### Three Interaction Modes
+#### Playlist Button Interactions
 
-#### 1️⃣ **Click** - Export as JSON
+- **Click**: Export all tracks as JSON array
+- **Long-press** (600ms): Generate batch download script for all tracks
+- **Shift+Click**: Open settings page
 
-Quick click copies full track data to clipboard:
+Example JSON output (playlist):
 
 ```json
 [
@@ -134,30 +155,55 @@ Quick click copies full track data to clipboard:
     "username": "Artist Name",
     "trackTitle": "Track Title",
     "url": "https://soundcloud.com/artist/track"
+  },
+  {
+    "username": "Another Artist",
+    "trackTitle": "Another Track",
+    "url": "https://soundcloud.com/artist2/track2"
   }
 ]
 ```
 
-**Use for:** Data analysis, importing to spreadsheets, custom scripts
+### Using on Song Pages (New!)
 
-#### 2️⃣ **Long-press** (600ms) - Generate Download Script
+1. Navigate to any individual track (e.g., `https://soundcloud.com/acyanmusic/saymyname`)
+2. Wait ~1 second for the **"Track info"** button to appear (next to like/repost buttons)
 
-Hold the button for ~1 second to copy a ready-to-run batch script:
+#### Song Button Interactions
 
-```bash
-dl-soundcloud https://soundcloud.com/track1 && dl-soundcloud https://soundcloud.com/track2 && dl-soundcloud https://soundcloud.com/track3 && dl-soundcloud https://soundcloud.com/track4 && dl-soundcloud https://soundcloud.com/track5 &&
-dl-soundcloud https://soundcloud.com/track6 && ...
+- **Click**: Export single track as JSON object (not array!)
+- **Long-press** (600ms): Generate download command for this track
+- **Shift+Click**: Add track to your collection
+
+Example JSON output (song):
+
+```json
+{
+  "username": "ACYAN",
+  "trackTitle": "Say My Name",
+  "url": "https://soundcloud.com/acyanmusic/saymyname"
+}
 ```
 
-**Use for:** Bulk downloading tracks with command-line tools
+### Track Collection Feature (New!)
 
-#### 3️⃣ **Shift+Click** - Open Settings
+Build a persistent collection of tracks as you browse:
 
-Hold Shift and click to configure the extension.
+1. **Add tracks**: On any song page, **Shift+Click** the "Track info" button
+2. **View collection**: Open Settings → Scroll to "📚 Track Collection" section
+3. **Export collection**: Click "📋 Copy JSON" or "📜 Copy Script"
+4. **Remove tracks**: Click "Remove" on individual tracks or "🗑️ Clear All"
 
-### ⚠️ Important: Loading All Tracks
+**Features**:
 
-SoundCloud loads tracks lazily (15 or 30 at a time). **Before using the button**:
+- Tracks persist across browser sessions
+- Automatic duplicate detection (by URL)
+- Inline button feedback (no scrolling)
+- Export entire collection as JSON or batch script
+
+### ⚠️ Important: Loading All Tracks (Playlists)
+
+SoundCloud loads tracks lazily (15 or 30 at a time). **Before exporting a playlist**:
 
 - Scroll to the bottom of the playlist
 - Wait for all tracks to load
@@ -168,31 +214,34 @@ SoundCloud loads tracks lazily (15 or 30 at a time). **Before using the button**
 ```
 soundcloud-ext/
 ├── src/                      # TypeScript source files
-│   ├── content.ts           # Main content script
-│   ├── options.ts           # Options page script
+│   ├── content.ts           # Main content script (page detection & button injection)
+│   ├── options.ts           # Options page script (settings + collection UI)
 │   ├── shared/              # Shared modules
 │   │   ├── types.ts         # Type definitions
 │   │   ├── constants.ts     # Configuration constants
-│   │   └── settings.ts      # Settings management
+│   │   ├── settings.ts      # Settings management (localStorage)
+│   │   └── collection.ts    # Collection management (chrome.storage)
 │   ├── utils/               # Utility functions
-│   │   ├── playlist.ts      # Track extraction
-│   │   └── clipboard.ts     # Copy operations
+│   │   ├── playlist.ts      # Playlist track extraction
+│   │   ├── song.ts          # Song page detection & extraction
+│   │   └── clipboard.ts     # Clipboard copy operations
 │   └── ui/                  # UI components
-│       ├── button.ts        # Button creation
+│       ├── button.ts        # Button creation & interaction handlers
 │       └── icon.ts          # SVG icon generation
 ├── dist/                    # Compiled output (generated)
-│   ├── content.js           # Bundled content script
-│   └── options.js           # Bundled options script
+│   ├── content.js           # Bundled content script (~10kb)
+│   └── options.js           # Bundled options script (~7kb)
 ├── build.js                 # esbuild bundler configuration
 ├── update-version.js        # Version management script
-├── options.html             # Settings page UI
+├── options.html             # Settings page UI (includes collection section)
 ├── manifest.json            # Extension configuration
 ├── package.json             # Dependencies and scripts
 ├── tsconfig.json            # TypeScript configuration
-├── .nvmrc                   # Node.js version specification (v20 LTS)
+├── memory.jsonl             # Project context (for AI assistants)
+├── .nvmrc                   # Node.js version specification (v23.9.0)
 ├── icon.svg / icon.png      # Extension icons
 ├── README.md                # This file
-├── BUILD.md                 # **Complete compilation instructions for reviewers**
+├── BUILD.md                 # Complete compilation instructions for reviewers
 ├── setup.sh                 # Automated setup script
 ├── VERSIONING.md            # Version management guide
 └── PUBLISHING.md            # Store publishing guide
@@ -202,16 +251,22 @@ soundcloud-ext/
 
 | File | Purpose |
 |------|---------|
-| `src/content.ts` | Main content script (button injection, navigation) |
-| `src/options.ts` | Settings page logic |
-| `src/shared/` | Shared code used by multiple modules |
-| `src/utils/` | Utility functions (playlist, clipboard) |
-| `src/ui/` | UI components (button, icon) |
+| `src/content.ts` | Main content script (page detection, button injection, SPA navigation) |
+| `src/options.ts` | Settings page logic + collection UI |
+| `src/shared/collection.ts` | **Track collection management (chrome.storage)** |
+| `src/shared/settings.ts` | Settings management (localStorage) |
+| `src/shared/constants.ts` | Configuration constants (selectors, IDs, defaults) |
+| `src/utils/playlist.ts` | Playlist page detection & track extraction |
+| `src/utils/song.ts` | **Song page detection & track extraction (new)** |
+| `src/utils/clipboard.ts` | Clipboard operations (JSON, script export) |
+| `src/ui/button.ts` | Button creation & interaction handlers (dependency injection) |
+| `src/ui/icon.ts` | SVG icon generation |
 | `dist/` | Compiled output (auto-generated by esbuild) |
 | `build.js` | Build system (bundles modules into single files) |
 | `update-version.js` | Automated version management with git tags |
-| `options.html` | Settings page UI |
-| `manifest.json` | Extension configuration for browsers |
+| `options.html` | Settings page UI (includes collection section) |
+| `manifest.json` | Extension configuration (permissions: storage, clipboardWrite) |
+| `memory.jsonl` | Project context for AI assistants |
 | `.nvmrc` | Node.js version specification (23.9.0) for nvm |
 | `BUILD.md` | **Complete compilation instructions for store reviewers** |
 | `setup.sh` | Automated setup script for building from source |

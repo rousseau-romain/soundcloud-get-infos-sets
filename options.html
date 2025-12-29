@@ -227,6 +227,169 @@
       border-radius: 3px;
       color: #FF5500;
     }
+
+    /* Collection Section */
+    .collection-section {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 2px solid #e0e0e0;
+    }
+
+    .section-title {
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .section-description {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 24px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border: 2px dashed #d0d0d0;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state p {
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .empty-hint {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .collection-list {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .collection-header {
+      background: #f8f9fa;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .collection-count {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .collection-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-danger {
+      background: #dc3545;
+    }
+
+    .btn-danger:hover {
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    .tracks-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .track-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s ease;
+    }
+
+    .track-item:hover {
+      background: #f8f9fa;
+    }
+
+    .track-item:last-child {
+      border-bottom: none;
+    }
+
+    .track-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .track-title {
+      font-weight: 600;
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-artist {
+      font-size: 12px;
+      color: #666;
+    }
+
+    .track-url {
+      font-size: 11px;
+      color: #999;
+      font-family: 'Courier New', monospace;
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .track-remove {
+      padding: 6px 12px;
+      border: none;
+      background: #f5f5f5;
+      color: #666;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 12px;
+      flex-shrink: 0;
+    }
+
+    .track-remove:hover {
+      background: #dc3545;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -311,6 +474,30 @@
           <button type="button" id="resetBtn" class="btn-reset">🔄 Reset to Defaults</button>
         </div>
       </form>
+
+      <!-- Collection Section -->
+      <div class="collection-section">
+        <h2 class="section-title">📚 Track Collection</h2>
+        <p class="section-description">Tracks added via Shift+Click on song pages</p>
+
+        <div id="collectionEmpty" class="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>No tracks in collection yet</p>
+          <p class="empty-hint">Visit a song page and Shift+Click the button to add tracks</p>
+        </div>
+
+        <div id="collectionList" class="collection-list" style="display: none;">
+          <div class="collection-header">
+            <span id="collectionCount" class="collection-count">0 tracks</span>
+            <div class="collection-actions">
+              <button type="button" id="exportCollectionBtn" class="btn-action">📋 Copy JSON</button>
+              <button type="button" id="exportScriptBtn" class="btn-action">📜 Copy Script</button>
+              <button type="button" id="clearCollectionBtn" class="btn-action btn-danger">🗑️ Clear All</button>
+            </div>
+          </div>
+          <div id="collectionTracks" class="tracks-container"></div>
+        </div>
+      </div>
     </div>
   </div>
 
