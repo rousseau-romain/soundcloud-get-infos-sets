@@ -107,30 +107,35 @@ export function attachLongPressHandlers(button: HTMLButtonElement, handlers: But
  * Create a custom button matching SoundCloud's design
  *
  * @param id - The button element ID
- * @param title - The button label text
+ * @param title - The button label text (optional - if not provided, shows only icon)
  * @param handlers - Object containing onShortPress and onLongPress callbacks
  * @returns The created button element
  */
-export function createCustomButton(id: string, title: string, handlers: ButtonHandlers): HTMLButtonElement {
+export function createCustomButton(id: string, title: string | undefined, handlers: ButtonHandlers): HTMLButtonElement {
   const button = document.createElement('button');
   button.id = id;
   button.className = 'sc-button-primary sc-button sc-button-medium sc-button-responsive';
   button.type = 'button';
+  button.style.display = 'flex';
+  button.style.alignItems = 'center';
+  button.style.gap = '6px';
 
   // Different tooltip based on whether custom shift-click handler is provided
   const shiftClickAction = handlers.onShiftClick ? 'Add to collection' : 'Settings';
-  button.title = `${title}\n\nClick: Copy JSON\nLong-press: Copy batch script\nShift+Click: ${shiftClickAction}`;
-  button.setAttribute('aria-label', title);
+  const tooltipTitle = title || 'Track actions';
+  button.title = `${tooltipTitle}\n\nClick: Copy JSON\nLong-press: Copy batch script\nShift+Click: ${shiftClickAction}`;
+  button.setAttribute('aria-label', tooltipTitle);
 
   // Add icon (created with DOM methods for security)
   const icon = createIconSVG();
   button.appendChild(icon);
 
-  // Add text label
-  const label = document.createElement('span');
-  label.style.verticalAlign = 'middle';
-  label.textContent = title;
-  button.appendChild(label);
+  // Add text label only if title is provided
+  if (title) {
+    const label = document.createElement('span');
+    label.textContent = title;
+    button.appendChild(label);
+  }
 
   // Add long-press handlers
   attachLongPressHandlers(button, handlers);
@@ -233,7 +238,6 @@ export function createSongButtonHandlers(getSongData: () => { track: Track | nul
       }, 100);
     },
     onShiftClick: async (button: HTMLButtonElement) => {
-      const originalText = button.innerHTML;
       const { track, name } = getSongData();
 
       if (!track) {
@@ -253,10 +257,10 @@ export function createSongButtonHandlers(getSongData: () => { track: Track | nul
 
       if (wasAdded) {
         console.log('[SoundCloud Extension] Added to collection:', name);
-        showButtonFeedback(button, '✅ Added!', 'success', 2000, originalText);
+        showButtonFeedback(button, '✅ Added!', 'success');
       } else {
         console.log('[SoundCloud Extension] Track already in collection:', name);
-        showButtonFeedback(button, 'ℹ️ Already added', 'warning', 2000, originalText);
+        showButtonFeedback(button, 'ℹ️ Already added', 'warning');
       }
     }
   };

@@ -7,6 +7,7 @@ import { TRACK_SELECTORS, BATCH_SIZES } from '../shared/constants';
 
 /**
  * Check if the current page is a SoundCloud playlist/set page
+ * Includes both user playlists (/sets/) and discover sets (/discover/sets/)
  */
 export function isPlaylistPage(): boolean {
   return window.location.pathname.includes('/sets/');
@@ -22,9 +23,27 @@ export function getPlaylistName(): string {
 
 /**
  * Extract all tracks from the current playlist page
+ * Tries multiple selectors to support different playlist layouts
  */
 export function getTracks(): Track[] {
-  return Array.from(document.querySelectorAll(TRACK_SELECTORS.item)).map((item) => {
+  // Try multiple selectors for track items
+  const selectors = [
+    TRACK_SELECTORS.itemPlaylist,  // Playlist track lists
+    TRACK_SELECTORS.item,          // Track lists      
+    TRACK_SELECTORS.itemDiscover   // Discover sets item 
+  ];
+
+  let trackElements: Element[] = [];
+
+  for (const selector of selectors) {
+    trackElements = Array.from(document.querySelectorAll(selector));
+    if (trackElements.length > 0) {
+      console.log(`[SoundCloud Extension] Found ${trackElements.length} tracks using selector: ${selector}`);
+      break;
+    }
+  }
+
+  return trackElements.map((item) => {
     const usernameElement = item.querySelector(TRACK_SELECTORS.username) as HTMLElement;
     const trackTitleElement = item.querySelector(TRACK_SELECTORS.title) as HTMLAnchorElement;
 

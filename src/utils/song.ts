@@ -15,8 +15,19 @@ export function isSongPage(): boolean {
   // Must have at least 2 path segments: /{username}/{track}
   const segments = path.split('/').filter(s => s.length > 0);
 
+  // Song pages must have exactly 2 segments
+  if (segments.length !== 2) {
+    return false;
+  }
+
   // Exclude playlists (contain /sets/)
   if (path.includes('/sets/')) {
+    return false;
+  }
+
+  // Exclude feed, stream, and library pages (even if they somehow have 2 segments)
+  const excludedFirstSegments = ['feed', 'stream', 'library', 'you'];
+  if (excludedFirstSegments.includes(segments[0].toLowerCase())) {
     return false;
   }
 
@@ -26,8 +37,7 @@ export function isSongPage(): boolean {
     return false;
   }
 
-  // Song pages have exactly 2 segments: username and track slug
-  return segments.length === 2;
+  return true;
 }
 
 /**

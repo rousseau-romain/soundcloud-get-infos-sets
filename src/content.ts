@@ -15,10 +15,13 @@ import {
   BUTTON_CONTAINER_SELECTORS,
   SONG_BUTTON_ID,
   SONG_BUTTON_LABEL,
-  SONG_BUTTON_CONTAINER_SELECTORS
+  SONG_BUTTON_CONTAINER_SELECTORS,
+  ARTIST_BUTTON_ID_PREFIX,
+  ARTIST_BUTTON_CONTAINER_SELECTORS
 } from './shared/constants';
 import { isPlaylistPage } from './utils/playlist';
 import { isSongPage, getSongTrack, getSongName } from './utils/song';
+import { isArtistPage, getTrackItems, extractTrackFromElement } from './utils/artist';
 import { createCustomButton, createPlaylistButtonHandlers, createSongButtonHandlers } from './ui/button';
 
 /**
@@ -27,6 +30,7 @@ import { createCustomButton, createPlaylistButtonHandlers, createSongButtonHandl
 enum PageType {
   PLAYLIST = 'playlist',
   SONG = 'song',
+  ARTIST = 'artist',
   OTHER = 'other'
 }
 
@@ -36,6 +40,7 @@ enum PageType {
 function detectPageType(): PageType {
   if (isPlaylistPage()) return PageType.PLAYLIST;
   if (isSongPage()) return PageType.SONG;
+  if (isArtistPage()) return PageType.ARTIST;
   return PageType.OTHER;
 }
 
@@ -50,10 +55,12 @@ function injectPlaylistButton(): void {
 
   // Find the button container in the playlist header
   let container: HTMLElement | null = null;
+  let matchedSelector: string | null = null;
 
   for (const selector of BUTTON_CONTAINER_SELECTORS) {
     container = document.querySelector<HTMLElement>(selector);
     if (container) {
+      matchedSelector = selector;
       break;
     }
   }
@@ -66,8 +73,18 @@ function injectPlaylistButton(): void {
   // Create and inject the button with playlist handlers
   const handlers = createPlaylistButtonHandlers();
   const button = createCustomButton(BUTTON_ID, BUTTON_LABEL, handlers);
-  container.appendChild(button);
-  console.log('[SoundCloud Extension] Playlist button injected');
+
+  // For discover sets, wrap button in systemPlaylistDetails__button div
+  if (matchedSelector === '.systemPlaylistDetails__controls') {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'systemPlaylistDetails__button';
+    wrapper.appendChild(button);
+    container.insertBefore(wrapper, container.firstChild);
+    console.log('[SoundCloud Extension] Playlist button injected (wrapped for discover sets)');
+  } else {
+    container.insertBefore(button, container.firstChild);
+    console.log('[SoundCloud Extension] Playlist button injected');
+  }
 }
 
 /**
@@ -116,6 +133,68 @@ function injectSongButton(): void {
 }
 
 /**
+ * Inject buttons for artist page tracks
+ */
+function injectArtistButtons(): void {
+  console.log('[SoundCloud Extension] Attempting to inject artist page buttons...');
+
+  const trackItems = getTrackItems();
+
+  if (trackItems.length === 0) {
+    console.log('[SoundCloud Extension] No track items found on artist page');
+    return;
+  }
+
+  console.log(`[SoundCloud Extension] Found ${trackItems.length} track items on artist page`);
+
+  let injectedCount = 0;
+
+  trackItems.forEach((trackItem, index) => {
+    const buttonId = `${ARTIST_BUTTON_ID_PREFIX}-${index}`;
+
+    // Check if button already exists for this track
+    if (trackItem.querySelector(`#${buttonId}`)) {
+      return;
+    }
+
+    // Find the action buttons container within this track item
+    let container: HTMLElement | null = null;
+
+    for (const selector of ARTIST_BUTTON_CONTAINER_SELECTORS) {
+      container = trackItem.querySelector<HTMLElement>(selector);
+      if (container) {
+        break;
+      }
+    }
+
+    if (!container) {
+      console.log(`[SoundCloud Extension] No container found for track ${index}`);
+      return;
+    }
+
+    // Extract track data from this specific element
+    const trackData = extractTrackFromElement(trackItem);
+
+    if (!trackData) {
+      console.log(`[SoundCloud Extension] Could not extract data for track ${index}`);
+      return;
+    }
+
+    // Create button handlers with the extracted track data
+    const handlers = createSongButtonHandlers(() => ({
+      track: trackData,
+      name: trackData.trackTitle
+    }));
+
+    const button = createCustomButton(buttonId, undefined, handlers);
+    container.appendChild(button);
+    injectedCount++;
+  });
+
+  console.log(`[SoundCloud Extension] Injected ${injectedCount} buttons on artist page`);
+}
+
+/**
  * Initialize the extension based on page type
  */
 function initializeExtension(): void {
@@ -127,6 +206,13 @@ function initializeExtension(): void {
     injectPlaylistButton();
     setTimeout(injectPlaylistButton, 1000);
     setTimeout(injectPlaylistButton, 2000);
+
+    // Also inject individual track buttons within the playlist
+    injectArtistButtons();
+    setTimeout(injectArtistButtons, 1000);
+    setTimeout(injectArtistButtons, 2000);
+    setTimeout(injectArtistButtons, 3000);
+    setTimeout(injectArtistButtons, 5000);
   } else if (pageType === PageType.SONG) {
     console.log('[SoundCloud Extension] Detected song page, attempting to inject button...');
     // Try to inject song button immediately and with retries
@@ -134,6 +220,14 @@ function initializeExtension(): void {
     setTimeout(injectSongButton, 1000);
     setTimeout(injectSongButton, 2000);
     setTimeout(injectSongButton, 3000);
+  } else if (pageType === PageType.ARTIST) {
+    console.log('[SoundCloud Extension] Detected artist page, attempting to inject buttons...');
+    // Try to inject artist buttons immediately and with retries
+    injectArtistButtons();
+    setTimeout(injectArtistButtons, 1000);
+    setTimeout(injectArtistButtons, 2000);
+    setTimeout(injectArtistButtons, 3000);
+    setTimeout(injectArtistButtons, 5000);
   }
   // For OTHER page types, do nothing
 }

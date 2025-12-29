@@ -27,7 +27,6 @@ export function createIconSVG(): SVGSVGElement {
   });
   svg.style.display = 'inline-block';
   svg.style.verticalAlign = 'middle';
-  svg.style.marginRight = '6px';
 
   // Background circle
   const circle = createSVGElement('circle', {
