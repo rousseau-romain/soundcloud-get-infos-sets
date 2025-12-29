@@ -21,6 +21,7 @@ const buildOptions = {
   target: 'es2020',
   sourcemap: isWatch ? 'inline' : false,
   minify: !isWatch,
+  drop: isWatch ? [] : ['console'],  // Remove console.log in production builds
   logLevel: 'info'
 };
 
